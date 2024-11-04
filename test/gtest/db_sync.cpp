@@ -756,10 +756,6 @@ void CheckFDBEntry(size_t thread_index,
             miopen::solver::ConvSolution sol;
 
             auto db = miopen::GetDb(ctx);
-            //using PerformanceConfig = decltype(solv.GetDefaultPerformanceConfig(ctx, problem));
-            //PerformanceConfig perf_config{};
-            //const auto pdb_entry_exists = db.Load(problem, id, {});
-            //std::string perf_cfg = solv.GetPerfCfgParams(ctx, problem, db);
             const auto pdb_entry_exists = pdb_vals.find(val.solver_id) != pdb_vals.end();
 
             if(solv.IsTunable())
