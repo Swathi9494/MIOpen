@@ -53,8 +53,7 @@ auto GetTestCases()
     const std::string dis_fwd     = " --disable-forward";
     const std::string dis_vali    = " --disable-validation";
 
-    auto basic_tests = std::vector
-    {
+    auto basic_tests = std::vector{
         // clang-format off
     std::pair{env    , v + " --input  16  16 56 56 --weights 64  16 1 1 --pads_strides_dilations 0 0 1 1 1 1" + dis_bk_data + dis_bk_wei},
     std::pair{env    , v + " --input  16  64 34 34 --weights 64  64 3 3 --pads_strides_dilations 0 0 1 1 1 1" + dis_bk_data + dis_bk_wei},
