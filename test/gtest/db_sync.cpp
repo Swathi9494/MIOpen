@@ -378,18 +378,18 @@ void GetPerfDbVals(const fs::path& filename,
 
     if(perf_db_map.find(key) != perf_db_map.end())
     {
-        std::istringstream pdb_line {perf_db_map.at(key).content};
+        std::istringstream pdb_line{perf_db_map.at(key).content};
         char fragment[1024];
         while(pdb_line.getline(fragment, 1024, ';'))
         {
-            std::string id_val {fragment};
+            std::string id_val{fragment};
             const auto id_size = id_val.find(':');
             ASSERT_TRUE(id_size != std::string::npos) << "Ill formed value: " << id_val;
-            auto id     = id_val.substr(0, id_size);
-            auto cfg    = id_val.substr(id_size + 1);
+            auto id  = id_val.substr(0, id_size);
+            auto cfg = id_val.substr(id_size + 1);
             vals.emplace(id, cfg);
         }
-        select_query = " Loading "+key+" from "+filename.string();
+        select_query = " Loading " + key + " from " + filename.string();
     }
 #endif
 }
@@ -514,11 +514,11 @@ void SetupPaths(fs::path& fdb_file_path,
     const std::string suffix    = "HIP";                  // miopen::GetSystemFindDbSuffix();
     fdb_file_path               = root_path / (base_name + "." + suffix + ext);
 #if MIOPEN_ENABLE_SQLITE && MIOPEN_USE_SQLITE_PERFDB
-    pdb_file_path               = root_path / (base_name + ".db");
+    pdb_file_path = root_path / (base_name + ".db");
 #else
-    pdb_file_path               = root_path / (base_name + ".db.txt");
+    pdb_file_path = root_path / (base_name + ".db.txt");
 #endif
-    kdb_file_path               = root_path / (handle.GetDeviceName() + ".kdb");
+    kdb_file_path = root_path / (handle.GetDeviceName() + ".kdb");
     ASSERT_TRUE(fs::exists(fdb_file_path)) << "Db file does not exist" << fdb_file_path;
     ASSERT_TRUE(fs::exists(pdb_file_path)) << "Db file does not exist" << pdb_file_path;
     ASSERT_TRUE(SKIP_KDB_PDB_TESTING || fs::exists(kdb_file_path))
@@ -755,7 +755,7 @@ void CheckFDBEntry(size_t thread_index,
                 << " Solver: " << id.ToString();
             miopen::solver::ConvSolution sol;
 
-            auto db = miopen::GetDb(ctx);
+            auto db                     = miopen::GetDb(ctx);
             const auto pdb_entry_exists = pdb_vals.find(val.solver_id) != pdb_vals.end();
 
             if(solv.IsTunable())
@@ -781,13 +781,12 @@ void CheckFDBEntry(size_t thread_index,
                 if(!SKIP_KDB_PDB_TESTING && pdb_entry_exists)
                 {
                     perf_cfg = pdb_vals.at(val.solver_id);
-                    bool res  = solv.TestPerfCfgParams(ctx, problem, perf_cfg);
+                    bool res = solv.TestPerfCfgParams(ctx, problem, perf_cfg);
                     if(env::enabled(MIOPEN_DBSYNC_CLEAN) && not res)
                     {
-                        MIOPEN_LOG_W("Invalid perf config found fdb-key:" << kinder.first
-                                     << ", Solver" << val.solver_id
-                                     << ":" << perf_cfg
-                                     << ", Removing entry from fdb and pdb");
+                        MIOPEN_LOG_W("Invalid perf config found fdb-key:"
+                                     << kinder.first << ", Solver" << val.solver_id << ":"
+                                     << perf_cfg << ", Removing entry from fdb and pdb");
                         find_db_rw.Remove(kinder.first, id.ToString());
                         db.Remove(problem, id.ToString());
                         MIOPEN_LOG_W("Removal Complete fdb-key:" << kinder.first << ": solver"
@@ -798,8 +797,7 @@ void CheckFDBEntry(size_t thread_index,
                     {
                         EXPECT_TRUE(res) << '[' << (++failures) << "] " //
                                          << "Invalid perf config found fdb-key:" << kinder.first
-                                         << ", Solver: " << val.solver_id
-                                         << ":" << perf_cfg
+                                         << ", Solver: " << val.solver_id << ":" << perf_cfg
                                          << " pdb-select-query: " << pdb_select_query;
                     }
                     // we can verify the pdb entry by passing in an empty string and then comparing
@@ -809,7 +807,7 @@ void CheckFDBEntry(size_t thread_index,
                 }
                 else
                 {
-                    sol       = solv.FindSolution(ctx, problem, db, {}, "");
+                    sol      = solv.FindSolution(ctx, problem, db, {}, "");
                     perf_cfg = " Not Found (Using Default)";
                 }
                 // TODO Generate the Select query for pdb
@@ -844,8 +842,7 @@ void CheckFDBEntry(size_t thread_index,
                             EXPECT_TRUE(found)
                                 << '[' << (++failures) << "] " //
                                 << "KDB entry not found for  fdb-key:" << kinder.first
-                                << ", Solver: " << id.ToString()
-                                << " perf config:" << perf_cfg
+                                << ", Solver: " << id.ToString() << " perf config:" << perf_cfg
                                 << " filename: " << program_file << " compile args: "
                                 << compile_options; // for fdb key, solver id, solver pdb entry and
                                                     // kdb file and args
